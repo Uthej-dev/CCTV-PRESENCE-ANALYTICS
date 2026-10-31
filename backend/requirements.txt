@@ -1,0 +1,19 @@
+# --- Web / API ---
+fastapi==0.115.*
+uvicorn[standard]==0.32.*
+pydantic-settings==2.*
+email-validator==2.*
+python-multipart==0.0.*
+
+# --- Auth ---
+bcrypt==4.*
+PyJWT==2.*
+
+# --- Database ---
+pymongo==4.10.*
+
+# --- Computer vision ---
+ultralytics==8.3.*  # pulls in torch + opencv-python
+lap>=0.5.12
+imageio-ffmpeg==0.6.*  # bundled ffmpeg with H.264 for recordings
+

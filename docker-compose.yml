@@ -1,0 +1,45 @@
+# Full stack locally:  docker compose up --build
+#   frontend  http://localhost:3000
+#   API       http://localhost:8000/docs
+services:
+  mongo:
+    image: mongo:7
+    restart: unless-stopped
+    volumes:
+      - mongo-data:/data/db
+    healthcheck:
+      test: ["CMD", "mongosh", "--quiet", "--eval", "db.runCommand({ping:1}).ok"]
+      interval: 10s
+      retries: 5
+
+  backend:
+    build: ./backend
+    restart: unless-stopped
+    depends_on:
+      mongo:
+        condition: service_healthy
+    environment:
+      ENVIRONMENT: development
+      MONGODB_URI: mongodb://mongo:27017
+      MONGODB_DB: cctv_analytics
+      JWT_SECRET: ${JWT_SECRET:-dev-only-secret-change-me}
+      CORS_ORIGINS: http://localhost:3000
+      YOLO_DEVICE: cpu
+    ports:
+      - "8000:8000"
+    volumes:
+      - data:/app/data        # uploaded videos + recordings survive restarts
+
+  frontend:
+    build:
+      context: ./frontend
+      args:
+        VITE_API_URL: http://localhost:8000
+    depends_on:
+      - backend
+    ports:
+      - "3000:80"
+
+volumes:
+  mongo-data:
+  data:
